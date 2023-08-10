@@ -1,9 +1,9 @@
-<library path="lib/libpacmod3_nodelet">
-  <class name="pacmod3/pacmod3_nodelet"
-         type="pacmod3::Pacmod3Nl"
+<library path="lib/libpacmod4_nodelet">
+  <class name="pacmod4/pacmod4_nodelet"
+         type="pacmod4::Pacmod4Nl"
          base_class_type="nodelet::Nodelet">
     <description>
-      Pacmod3 ROS Driver
+      Pacmod4 ROS Driver
     </description>
   </class>
 </library>
