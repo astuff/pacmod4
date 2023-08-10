@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "pacmod3/pacmod3_nodelet.h"
+#include "pacmod4/pacmod4_nodelet.h"
 
 #include <string>
 
@@ -27,12 +27,12 @@
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "pacmod3_node");
+  ros::init(argc, argv, "pacmod4_node");
   nodelet::Loader nodelet;
   nodelet::M_string remap(ros::names::getRemappings());
   nodelet::V_string nargv;
   std::string nodelet_name = ros::this_node::getName();
-  nodelet.load(nodelet_name, "pacmod3/pacmod3_nodelet", remap, nargv);
+  nodelet.load(nodelet_name, "pacmod4/pacmod4_nodelet", remap, nargv);
   ros::spin();
   return 0;
 }
