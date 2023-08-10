@@ -408,12 +408,6 @@ void Pacmod4Nl::initializeSteeringRpt2Api()
   NODELET_INFO("Initialized Steering Rpt 2 API");
 }
 
-void Pacmod4Nl::initializeVinRptApi()
-{
-  pub_tx_list.emplace(VIN_RPT_CANID, nh_.advertise<pacmod4_msgs::VinRpt>("vin_rpt", 20));
-  NODELET_INFO("Initialized VIN Rpt API");
-}
-
 void Pacmod4Nl::initializeWheelSpeedApi(uint32_t can_id)
 {
   switch (can_id)
@@ -639,11 +633,6 @@ void Pacmod4Nl::initializeApiForMsg(uint32_t msg_can_id)
     case STEERING_AUX_RPT_2_CANID:
       {
         initializeSteeringRpt2Api();
-        break;
-      }
-    case VIN_RPT_CANID:
-      {
-        initializeVinRptApi();
         break;
       }
     case WHEEL_SPEED_RPT_CANID:

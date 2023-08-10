@@ -108,7 +108,6 @@
 #include <pacmod4_msgs/VehicleFaultRpt.h>
 #include <pacmod4_msgs/VehicleFaultRpt2.h>
 #include <pacmod4_msgs/VehicleSpeedRpt.h>
-#include <pacmod4_msgs/VinRpt.h>
 #include <pacmod4_msgs/WatchdogRpt.h>
 #include <pacmod4_msgs/WatchdogRpt2.h>
 #include <pacmod4_msgs/WheelSpeedRpt.h>
@@ -153,7 +152,6 @@ private:
   void initializeParkingBrakeRptApi();
   void initializeRearLightsRptApi();
   void initializeSteeringRpt2Api();
-  void initializeVinRptApi();
   void initializeWheelSpeedApi(uint32_t can_id);
   void initializeWiperApi();
 

@@ -79,7 +79,6 @@ Pacmod4RosMsgHandler::Pacmod4RosMsgHandler(uint32_t dbc_major_version)
   // Int Reports
   parse_functions[CRUISE_CONTROL_BUTTONS_RPT_CANID] =
   parse_functions[ENGINE_RPT_CANID] =
-  parse_functions[ENGINE_BRAKE_RPT_CANID] =
   parse_functions[EXHAUST_BRAKE_RPT_CANID] =
   parse_functions[HEADLIGHT_RPT_CANID] =
   parse_functions[REAR_PASS_DOOR_RPT_CANID] =
@@ -88,7 +87,6 @@ Pacmod4RosMsgHandler::Pacmod4RosMsgHandler(uint32_t dbc_major_version)
   parse_functions[WIPER_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseSystemRptInt, std::ref(*msg_api_), std::placeholders::_1);
   pub_functions[CRUISE_CONTROL_BUTTONS_RPT_CANID] =
   pub_functions[ENGINE_RPT_CANID] =
-  pub_functions[ENGINE_BRAKE_RPT_CANID] =
   pub_functions[EXHAUST_BRAKE_RPT_CANID] =
   pub_functions[HEADLIGHT_RPT_CANID] =
   pub_functions[REAR_PASS_DOOR_RPT_CANID] =
@@ -140,6 +138,14 @@ Pacmod4RosMsgHandler::Pacmod4RosMsgHandler(uint32_t dbc_major_version)
   pub_functions[TURN_AUX_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::TurnAuxRpt>, this, std::placeholders::_1, std::placeholders::_2);
   pub_functions[WIPER_AUX_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::WiperAuxRpt>, this, std::placeholders::_1, std::placeholders::_2);
 
+  // Command Limit Reports
+  parse_functions[ACCEL_CMD_LIMIT_RPT_CANID] =
+  parse_functions[BRAKE_CMD_LIMIT_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseCmdLimitRpt, std::ref(*msg_api_), std::placeholders::_1);
+  parse_functions[STEERING_CMD_LIMIT_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseSteeringCmdLimitRpt, std::ref(*msg_api_), std::placeholders::_1);
+  pub_functions[ACCEL_CMD_LIMIT_RPT_CANID] =
+  pub_functions[BRAKE_CMD_LIMIT_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::SystemCmdLimitRpt>, this, std::placeholders::_1, std::placeholders::_2);
+  pub_functions[STEERING_CMD_LIMIT_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::SteeringCmdLimitRpt>, this, std::placeholders::_1, std::placeholders::_2);
+
   // Component Reports
   parse_functions[COMPONENT_RPT_00_CANID] =
   parse_functions[COMPONENT_RPT_01_CANID] =
@@ -177,12 +183,22 @@ Pacmod4RosMsgHandler::Pacmod4RosMsgHandler(uint32_t dbc_major_version)
 
   // Other Reports
   parse_functions[AIR_PRESSURE_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseAirPressureRpt, std::ref(*msg_api_), std::placeholders::_1);
+  parse_functions[ANG_VEL_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseAngVelRpt, std::ref(*msg_api_), std::placeholders::_1);
+  parse_functions[AUTOMS_MAN_SWITCH_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseAutomsManSwitchRpt, std::ref(*msg_api_), std::placeholders::_1);
+  parse_functions[BATTERY_VOLTAGE_LEVEL_RPT_1_CANID] =
+  parse_functions[BATTERY_VOLTAGE_LEVEL_RPT_2_CANID] = std::bind(&pacmod4_common::DbcApi::ParseBatteryVoltageLevelRpt, std::ref(*msg_api_), std::placeholders::_1);
+  parse_functions[CABIN_CLIMATE_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseCabinClimateRpt, std::ref(*msg_api_), std::placeholders::_1);
+  parse_functions[DOOR_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseDoorRpt, std::ref(*msg_api_), std::placeholders::_1);
   parse_functions[DRIVE_TRAIN_FEATURE_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseDrivetrainFeatureRpt, std::ref(*msg_api_), std::placeholders::_1);
+  parse_functions[ENGINE_BRAKE_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseEngineBrakeRpt, std::ref(*msg_api_), std::placeholders::_1);
   parse_functions[ESTOP_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseEStopRpt, std::ref(*msg_api_), std::placeholders::_1);
   parse_functions[ENGINE_LOAD_FACTOR_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseEngineLoadFactorRpt, std::ref(*msg_api_), std::placeholders::_1);
   parse_functions[GLOBAL_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseGlobalRpt, std::ref(*msg_api_), std::placeholders::_1);
   parse_functions[GLOBAL_RPT_2_CANID] = std::bind(&pacmod4_common::DbcApi::ParseGlobalRpt2, std::ref(*msg_api_), std::placeholders::_1);
+  parse_functions[INTERIOR_LIGHTS_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseInteriorLightsRpt, std::ref(*msg_api_), std::placeholders::_1);
   parse_functions[NOTIFICATION_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseNotificationRpt, std::ref(*msg_api_), std::placeholders::_1);
+  parse_functions[OCCUPANCY_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseOccupancyRpt, std::ref(*msg_api_), std::placeholders::_1);
+  parse_functions[REAR_LIGHTS_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseRearLightsRpt, std::ref(*msg_api_), std::placeholders::_1);
   parse_functions[REMOTE_STOP_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseRemoteStopRpt, std::ref(*msg_api_), std::placeholders::_1);
   parse_functions[SAFETY_FUNC_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseSafetyFuncRpt, std::ref(*msg_api_), std::placeholders::_1);
   parse_functions[SAFETY_FUNC_RPT_2_CANID] = std::bind(&pacmod4_common::DbcApi::ParseSafetyFuncRpt2, std::ref(*msg_api_), std::placeholders::_1);
@@ -190,12 +206,22 @@ Pacmod4RosMsgHandler::Pacmod4RosMsgHandler(uint32_t dbc_major_version)
   parse_functions[WHEEL_SPEED_RPT_2_CANID] = std::bind(&pacmod4_common::DbcApi::ParseWheelSpeedRpt, std::ref(*msg_api_), std::placeholders::_1);
   parse_functions[VEHICLE_SPEED_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseVehicleSpeedRpt, std::ref(*msg_api_), std::placeholders::_1);
   pub_functions[AIR_PRESSURE_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::AirPressureRpt>, this, std::placeholders::_1, std::placeholders::_2);
+  pub_functions[ANG_VEL_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::AngVelRpt>, this, std::placeholders::_1, std::placeholders::_2);
+  pub_functions[AUTOMS_MAN_SWITCH_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::AutomsManSwitchRpt>, this, std::placeholders::_1, std::placeholders::_2);
+  pub_functions[BATTERY_VOLTAGE_LEVEL_RPT_1_CANID] =
+  pub_functions[BATTERY_VOLTAGE_LEVEL_RPT_2_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::BatteryVoltageLevelRpt>, this, std::placeholders::_1, std::placeholders::_2);
+  pub_functions[CABIN_CLIMATE_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::CabinClimateRpt>, this, std::placeholders::_1, std::placeholders::_2);
   pub_functions[DRIVE_TRAIN_FEATURE_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::DrivetrainFeatureRpt>, this, std::placeholders::_1, std::placeholders::_2);
+  pub_functions[DOOR_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::DoorRpt>, this, std::placeholders::_1, std::placeholders::_2);
+  pub_functions[ENGINE_BRAKE_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::EngineBrakeRpt>, this, std::placeholders::_1, std::placeholders::_2);
   pub_functions[ESTOP_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::EStopRpt>, this, std::placeholders::_1, std::placeholders::_2);
   pub_functions[ENGINE_LOAD_FACTOR_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::EngineLoadFactorRpt>, this, std::placeholders::_1, std::placeholders::_2);
   pub_functions[GLOBAL_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::GlobalRpt>, this, std::placeholders::_1, std::placeholders::_2);
   pub_functions[GLOBAL_RPT_2_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::GlobalRpt2>, this, std::placeholders::_1, std::placeholders::_2);
+  pub_functions[INTERIOR_LIGHTS_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::InteriorLightsRpt>, this, std::placeholders::_1, std::placeholders::_2);
   pub_functions[NOTIFICATION_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::NotificationRpt>, this, std::placeholders::_1, std::placeholders::_2);
+  pub_functions[OCCUPANCY_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::OccupancyRpt>, this, std::placeholders::_1, std::placeholders::_2);
+  pub_functions[REAR_LIGHTS_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::RearLightsRpt>, this, std::placeholders::_1, std::placeholders::_2);
   pub_functions[REMOTE_STOP_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::RemoteStopRpt>, this, std::placeholders::_1, std::placeholders::_2);
   pub_functions[SAFETY_FUNC_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::SafetyFuncRpt>, this, std::placeholders::_1, std::placeholders::_2);
   pub_functions[SAFETY_FUNC_RPT_2_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::SafetyFuncRpt2>, this, std::placeholders::_1, std::placeholders::_2);
