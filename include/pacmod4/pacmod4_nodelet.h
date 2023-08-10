@@ -140,7 +140,7 @@ private:
   void initializeComponentRptApi(uint32_t can_id);
   void initializeDoorRptApi();
   void initializeEStopRptApi();
-  void initializeEngineBrakeRptApi();
+  void initializeEngineBrakeApi();
   void initializeEngineRptApi();
   void initializeGlobalRptApi(uint32_t can_id);
   void initializeHazardLightApi();

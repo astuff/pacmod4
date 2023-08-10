@@ -161,37 +161,6 @@ void Pacmod4Nl::initializeBrakeDecelApi()
   NODELET_INFO("Initialized Brake Decel Api");
 }
 
-void Pacmod4Nl::initializeMotorRptApi(uint32_t can_id)
-{
-  switch (can_id)
-  {
-  case BRAKE_MOTOR_RPT_1_CANID:
-    pub_tx_list.emplace(BRAKE_MOTOR_RPT_1_CANID, nh_.advertise<pacmod4_msgs::MotorRpt1>("brake_motor_rpt_1", 20));
-    NODELET_INFO("Initialized BrakeMotorRpt 1 API");
-    break;
-  case BRAKE_MOTOR_RPT_2_CANID:
-    pub_tx_list.emplace(BRAKE_MOTOR_RPT_2_CANID, nh_.advertise<pacmod4_msgs::MotorRpt2>("brake_motor_rpt_2", 20));
-    NODELET_INFO("Initialized BrakeMotorRpt 2 API");
-    break;
-  case BRAKE_MOTOR_RPT_3_CANID:
-    pub_tx_list.emplace(BRAKE_MOTOR_RPT_3_CANID, nh_.advertise<pacmod4_msgs::MotorRpt3>("brake_motor_rpt_3", 20));
-    NODELET_INFO("Initialized BrakeMotorRpt 3 API");
-    break;
-  case STEERING_MOTOR_RPT_1_CANID:
-    pub_tx_list.emplace(STEERING_MOTOR_RPT_1_CANID, nh_.advertise<pacmod4_msgs::MotorRpt1>("steering_motor_rpt_1", 20));
-    NODELET_INFO("Initialized steeringMotorRpt 1 API");
-    break;
-  case STEERING_MOTOR_RPT_2_CANID:
-    pub_tx_list.emplace(STEERING_MOTOR_RPT_2_CANID, nh_.advertise<pacmod4_msgs::MotorRpt2>("steering_motor_rpt_2", 20));
-    NODELET_INFO("Initialized steeringMotorRpt 2 API");
-    break;
-  case STEERING_MOTOR_RPT_3_CANID:
-    pub_tx_list.emplace(STEERING_MOTOR_RPT_3_CANID, nh_.advertise<pacmod4_msgs::MotorRpt3>("steering_motor_rpt_3", 20));
-    NODELET_INFO("Initialized steeringMotorRpt 3 API");
-    break;
-  }
-}
-
 void Pacmod4Nl::initializeBrakeRpt2Api()
 {
   pub_tx_list.emplace(BRAKE_RPT_2_CANID, nh_.advertise<pacmod4_msgs::SystemRptFloat>("brake_rpt_2", 20));
@@ -279,13 +248,13 @@ void Pacmod4Nl::initializeDoorRptApi()
   NODELET_INFO("Initialized DoorRpt API");
 }
 
-void Pacmod4Nl::initializeEngineRptApi()
+void Pacmod4Nl::initializeEStopRptApi()
 {
-  pub_tx_list.emplace(ENGINE_RPT_CANID, nh_.advertise<pacmod4_msgs::SystemRptInt>("enigne_rpt", 20));
-  NODELET_INFO("Initialized Engine Rpt API");
+  pub_tx_list.emplace(ESTOP_RPT_CANID, nh_.advertise<pacmod4_msgs::EStopRpt>("estop_rpt", 20));
+  NODELET_INFO("Initialized EStopRpt API");
 }
 
-void Pacmod4Nl::initializeEngineBrakeRptApi()
+void Pacmod4Nl::initializeEngineBrakeApi()
 {
   pub_tx_list.emplace(ENGINE_BRAKE_RPT_CANID, nh_.advertise<pacmod4_msgs::EngineBrakeRpt>("engine_brake_rpt", 20));
   pub_tx_list.emplace(ENGINE_BRAKE_AUX_RPT_CANID, nh_.advertise<pacmod4_msgs::EngineBrakeAuxRpt>("engine_brake_aux_rpt", 20));
@@ -295,13 +264,13 @@ void Pacmod4Nl::initializeEngineBrakeRptApi()
     ENGINE_BRAKE_CMD_CANID,
     std::shared_ptr<LockedData>(new LockedData()));
   received_cmds_.insert(ENGINE_BRAKE_CMD_CANID);
-  NODELET_INFO("Initialized Engine Brake Rpt API");
+  NODELET_INFO("Initialized Engine Brake API");
 }
 
-void Pacmod4Nl::initializeEStopRptApi()
+void Pacmod4Nl::initializeEngineRptApi()
 {
-  pub_tx_list.emplace(ESTOP_RPT_CANID, nh_.advertise<pacmod4_msgs::EStopRpt>("estop_rpt", 20));
-  NODELET_INFO("Initialized EStopRpt API");
+  pub_tx_list.emplace(ENGINE_RPT_CANID, nh_.advertise<pacmod4_msgs::SystemRptInt>("enigne_rpt", 20));
+  NODELET_INFO("Initialized Engine Rpt API");
 }
 
 void Pacmod4Nl::initializeGlobalRptApi(uint32_t can_id)
@@ -370,10 +339,66 @@ void Pacmod4Nl::initializeInteriorLightsRptApi()
   NODELET_INFO("Initialized InteriorLights API");
 }
 
+void Pacmod4Nl::initializeMediaControlsApi()
+{
+  pub_tx_list.emplace(MEDIA_CONTROLS_RPT_CANID, nh_.advertise<pacmod4_msgs::SystemRptInt>("media_controls_rpt", 20));
+
+  media_controls_set_cmd_sub = std::make_shared<ros::Subscriber>(
+    nh_.subscribe("media_controls_cmd", 20, &Pacmod4Nl::callback_media_controls_set_cmd, this));
+  rx_list.emplace(
+    MEDIA_CONTROLS_CMD_CANID,
+    std::shared_ptr<LockedData>(new LockedData()));
+  received_cmds_.insert(MEDIA_CONTROLS_CMD_CANID);
+  NODELET_INFO("Initialized Media Controls API");
+}
+
+void Pacmod4Nl::initializeMotorRptApi(uint32_t can_id)
+{
+  switch (can_id)
+  {
+  case BRAKE_MOTOR_RPT_1_CANID:
+    pub_tx_list.emplace(BRAKE_MOTOR_RPT_1_CANID, nh_.advertise<pacmod4_msgs::MotorRpt1>("brake_motor_rpt_1", 20));
+    NODELET_INFO("Initialized BrakeMotorRpt 1 API");
+    break;
+  case BRAKE_MOTOR_RPT_2_CANID:
+    pub_tx_list.emplace(BRAKE_MOTOR_RPT_2_CANID, nh_.advertise<pacmod4_msgs::MotorRpt2>("brake_motor_rpt_2", 20));
+    NODELET_INFO("Initialized BrakeMotorRpt 2 API");
+    break;
+  case BRAKE_MOTOR_RPT_3_CANID:
+    pub_tx_list.emplace(BRAKE_MOTOR_RPT_3_CANID, nh_.advertise<pacmod4_msgs::MotorRpt3>("brake_motor_rpt_3", 20));
+    NODELET_INFO("Initialized BrakeMotorRpt 3 API");
+    break;
+  case STEERING_MOTOR_RPT_1_CANID:
+    pub_tx_list.emplace(STEERING_MOTOR_RPT_1_CANID, nh_.advertise<pacmod4_msgs::MotorRpt1>("steering_motor_rpt_1", 20));
+    NODELET_INFO("Initialized steeringMotorRpt 1 API");
+    break;
+  case STEERING_MOTOR_RPT_2_CANID:
+    pub_tx_list.emplace(STEERING_MOTOR_RPT_2_CANID, nh_.advertise<pacmod4_msgs::MotorRpt2>("steering_motor_rpt_2", 20));
+    NODELET_INFO("Initialized steeringMotorRpt 2 API");
+    break;
+  case STEERING_MOTOR_RPT_3_CANID:
+    pub_tx_list.emplace(STEERING_MOTOR_RPT_3_CANID, nh_.advertise<pacmod4_msgs::MotorRpt3>("steering_motor_rpt_3", 20));
+    NODELET_INFO("Initialized steeringMotorRpt 3 API");
+    break;
+  }
+}
+
+void Pacmod4Nl::initializeOccupancyRptApi()
+{
+  pub_tx_list.emplace(OCCUPANCY_RPT_CANID, nh_.advertise<pacmod4_msgs::OccupancyRpt>("occupancy_rpt", 20));
+  NODELET_INFO("Initialized OccupancyRpt API");
+}
+
 void Pacmod4Nl::initializeParkingBrakeRptApi()
 {
   pub_tx_list.emplace(PARKING_BRAKE_RPT_CANID, nh_.advertise<pacmod4_msgs::SystemRptBool>("parking_brake_rpt", 20));
   NODELET_INFO("Initialized ParkingBrakeRpt API");
+}
+
+void Pacmod4Nl::initializeRearLightsRptApi()
+{
+  pub_tx_list.emplace(REAR_LIGHTS_RPT_CANID, nh_.advertise<pacmod4_msgs::RearLightsRpt>("rear_lights_rpt", 20));
+  NODELET_INFO("Initialized RearLightsRpt API");
 }
 
 void Pacmod4Nl::initializeSteeringRpt2Api()
@@ -418,32 +443,7 @@ void Pacmod4Nl::initializeWiperApi()
   NODELET_INFO("Initialized Wiper API");
 }
 
-void Pacmod4Nl::initializeOccupancyRptApi()
-{
-  pub_tx_list.emplace(OCCUPANCY_RPT_CANID, nh_.advertise<pacmod4_msgs::OccupancyRpt>("occupancy_rpt", 20));
-  NODELET_INFO("Initialized OccupancyRpt API");
-}
-
-void Pacmod4Nl::initializeRearLightsRptApi()
-{
-  pub_tx_list.emplace(REAR_LIGHTS_RPT_CANID, nh_.advertise<pacmod4_msgs::RearLightsRpt>("rear_lights_rpt", 20));
-  NODELET_INFO("Initialized RearLightsRpt API");
-}
-
 // vehicle specific apis
-
-void Pacmod4Nl::initializeMediaControlsApi()
-{
-  pub_tx_list.emplace(MEDIA_CONTROLS_RPT_CANID, nh_.advertise<pacmod4_msgs::SystemRptInt>("media_controls_rpt", 20));
-
-  media_controls_set_cmd_sub = std::make_shared<ros::Subscriber>(
-    nh_.subscribe("media_controls_cmd", 20, &Pacmod4Nl::callback_media_controls_set_cmd, this));
-  rx_list.emplace(
-    MEDIA_CONTROLS_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(MEDIA_CONTROLS_CMD_CANID);
-  NODELET_INFO("Initialized Media Controls API");
-}
 
 void Pacmod4Nl::initializeVehicle0SpecificApi()
 {
@@ -576,7 +576,7 @@ void Pacmod4Nl::initializeApiForMsg(uint32_t msg_can_id)
     case ENGINE_BRAKE_RPT_CANID:
     case ENGINE_BRAKE_AUX_RPT_CANID:
       {
-        initializeEngineBrakeRptApi();
+        initializeEngineBrakeApi();
       }
     case ENGINE_RPT_CANID:
       {
@@ -930,17 +930,23 @@ void Pacmod4Nl::set_enable(bool val)
 {
   for (auto & cmd : rx_list)
   {
-    // This assumes that all data in rx_list are encoded
-    // command messages which means the least significant
-    // bit in their first byte will be the enable flag.
-    std::vector<uint8_t> current_data = cmd.second->getData();
+    // safety_func_cmd doesn't follow the normal command
+    // message design
+    // real-life pacmod subsystem enabled = subsystem enable bit high AND safety_func_cmd.command > 0
+    if (cmd.first != SAFETY_FUNC_CMD_CANID)
+    {
+      // This assumes that all data in rx_list are encoded
+      // command messages which means the least significant
+      // bit in their first byte will be the enable flag.
+      std::vector<uint8_t> current_data = cmd.second->getData();
 
-    if (val)
-      current_data[0] |= 0x01;  // Enable true
-    else
-      current_data[0] &= 0xFE;  // Enable false
+      if (val)
+        current_data[0] |= 0x01;  // Enable true
+      else
+        current_data[0] &= 0xFE;  // Enable false
 
-    cmd.second->setData(current_data);
+      cmd.second->setData(current_data);
+    }
   }
 }
 
