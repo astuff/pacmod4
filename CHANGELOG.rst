@@ -2,8 +2,8 @@
 Changelog for package pacmod4
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.0 (2023-08-10)
+------------------
 * add some missing parse/pub_functions
 * reorder functions and modify set_enable functionality
 * modify and rename implementation
