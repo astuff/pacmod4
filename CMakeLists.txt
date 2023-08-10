@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(pacmod3)
+project(pacmod4)
 
 add_definitions(-std=c++14)
 
@@ -10,7 +10,7 @@ set(catkin_deps
   nodelet
   roscpp
   std_msgs
-  pacmod3_msgs
+  pacmod4_msgs
   can_msgs
 )
 
@@ -28,50 +28,32 @@ catkin_package(
 
 include_directories(
   include
-  pacmod3_common/include
+  pacmod4_common/include
   ${catkin_INCLUDE_DIRS}
 )
 
 # Common Library
 add_compile_definitions(ROS_VERSION=$ENV{ROS_VERSION})
-add_library(pacmod3_common STATIC
-  pacmod3_common/src/pacmod3_dbc_ros_api.cpp
-  pacmod3_common/src/pacmod3_dbc3_ros_api.cpp
-  pacmod3_common/src/pacmod3_dbc4_ros_api.cpp
-  pacmod3_common/src/pacmod3_dbc5_ros_api.cpp
-  pacmod3_common/src/pacmod3_dbc6_ros_api.cpp
-  pacmod3_common/src/pacmod3_dbc7_ros_api.cpp
-  pacmod3_common/src/pacmod3_dbc8_ros_api.cpp
-  pacmod3_common/src/pacmod3_dbc9_ros_api.cpp
-  pacmod3_common/src/pacmod3_dbc10_ros_api.cpp
-  pacmod3_common/src/pacmod3_dbc11_ros_api.cpp
-  pacmod3_common/src/pacmod3_dbc12_ros_api.cpp
-  pacmod3_common/src/autogen/pacmod3.c
-  pacmod3_common/src/autogen/pacmod4.c
-  pacmod3_common/src/autogen/pacmod5.c
-  pacmod3_common/src/autogen/pacmod6.c
-  pacmod3_common/src/autogen/pacmod7.c
-  pacmod3_common/src/autogen/pacmod8.c
-  pacmod3_common/src/autogen/pacmod9.c
-  pacmod3_common/src/autogen/pacmod10.c
-  pacmod3_common/src/autogen/pacmod11.c
-  pacmod3_common/src/autogen/pacmod12.c
+add_library(pacmod4_common STATIC
+  pacmod4_common/src/pacmod4_dbc_ros_api.cpp
+  pacmod4_common/src/pacmod4_dbc13_ros_api.cpp
+  pacmod4_common/src/autogen/pacmod13.c
 )
 
 # nodelets
 add_library(${PROJECT_NAME}_nodelet
-  src/pacmod3_nodelet.cpp
-  src/pacmod3_ros_msg_handler.cpp
+  src/pacmod4_nodelet.cpp
+  src/pacmod4_ros_msg_handler.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_nodelet
-  pacmod3_common
+  pacmod4_common
   ${catkin_LIBRARIES}
 )
 
 # nodes
 add_executable(${PROJECT_NAME}_node
-  src/pacmod3_node.cpp
+  src/pacmod4_node.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_node
@@ -81,11 +63,11 @@ target_link_libraries(${PROJECT_NAME}_node
 # TODO: Re-enable after auto-formatting
 # set(ROSLINT_CPP_OPTS "--filter=-build/include_subdir")
 # roslint_cpp(
-#   src/pacmod3_node.cpp
-#   src/pacmod3_nodelet.cpp
-#   src/pacmod3_ros_msg_handler.cpp
-#   include/pacmod3/pacmod3_nodelet.h
-#   include/pacmod3/pacmod3_ros_msg_handler.h
+#   src/pacmod4_node.cpp
+#   src/pacmod4_nodelet.cpp
+#   src/pacmod4_ros_msg_handler.cpp
+#   include/pacmod4/pacmod3_nodelet.h
+#   include/pacmod4/pacmod3_ros_msg_handler.h
 #   )
 
 install(TARGETS
