@@ -18,12 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef PACMOD3_PACMOD3_ROS_MSG_HANDLER_H
-#define PACMOD3_PACMOD3_ROS_MSG_HANDLER_H
+#ifndef PACMOD4_PACMOD4_ROS_MSG_HANDLER_H
+#define PACMOD4_PACMOD4_ROS_MSG_HANDLER_H
 
 
-#include "pacmod3_dbc_ros_api.h"
-#include "pacmod3_dbc12_ros_api.h"
+#include "pacmod4_dbc_ros_api.h"
+#include "pacmod4_dbc13_ros_api.h"
 
 #include <string>
 #include <vector>
@@ -32,7 +32,7 @@
 
 #include <ros/ros.h>
 
-namespace pacmod3
+namespace pacmod4
 {
 class LockedData
 {
@@ -47,10 +47,10 @@ private:
   mutable std::mutex _data_mut;
 };
 
-class Pacmod3RosMsgHandler
+class Pacmod4RosMsgHandler
 {
 public:
-  Pacmod3RosMsgHandler(uint32_t dbc_major_version);
+  Pacmod4RosMsgHandler(uint32_t dbc_major_version);
 
   // Main parsing and publishing function, call this from the driver
   void ParseAndPublish(const can_msgs::Frame& can_msg, const ros::Publisher& pub);
@@ -64,7 +64,7 @@ public:
     {
       std::shared_ptr<RosMsgType> ros_msg = std::static_pointer_cast<RosMsgType>(parse_functions[can_msg.id](can_msg));
 
-      ros_msg->header.frame_id = "pacmod3";
+      ros_msg->header.frame_id = "pacmod4";
       ros_msg->header.stamp = can_msg.header.stamp;
 
       pub.publish(*ros_msg);
@@ -80,7 +80,7 @@ public:
     {
       ros_msg = *(std::static_pointer_cast<RosMsgType>(parse_functions[can_msg.id](can_msg)));
 
-      ros_msg.header.frame_id = "pacmod3";
+      ros_msg.header.frame_id = "pacmod4";
       ros_msg.header.stamp = can_msg.header.stamp;
 
       return true;
@@ -104,7 +104,7 @@ public:
   }
 
 private:
-  std::unique_ptr<pacmod3_common::DbcApi> msg_api_;
+  std::unique_ptr<pacmod4_common::DbcApi> msg_api_;
 
   // List of functions for parsing CAN frames into ROS msgs
   std::map<uint32_t, std::function<std::shared_ptr<void>(const can_msgs::Frame&)>> parse_functions;
@@ -113,6 +113,6 @@ private:
   std::map<uint32_t, std::function<void(const can_msgs::Frame&, const ros::Publisher&)>> pub_functions;
 };
 
-}  // namespace pacmod3
+}  // namespace pacmod4
 
-#endif  // PACMOD3_PACMOD3_ROS_MSG_HANDLER_H
+#endif  // PACMOD4_PACMOD4_ROS_MSG_HANDLER_H
