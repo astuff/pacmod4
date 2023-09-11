@@ -83,18 +83,19 @@ void Pacmod4Nl::onInit()
     TURN_CMD_CANID,
     std::shared_ptr<LockedData>(new LockedData()));
 
-  // Init cmds to send, always init core subsystems with enable false
-  received_cmds_.insert(ACCEL_CMD_CANID);
-  received_cmds_.insert(BRAKE_CMD_CANID);
-  received_cmds_.insert(SHIFT_CMD_CANID);
-  received_cmds_.insert(STEERING_CMD_CANID);
-  received_cmds_.insert(TURN_CMD_CANID);
-
-  // Initialize Turn Signal command byte (1) with non-0 value
-  std::vector<uint8_t> initial_turn_cmd(2);
-  initial_turn_cmd[0] = 0;
-  initial_turn_cmd[1] = pacmod4_msgs::SystemCmdInt::TURN_NONE;
-  rx_list[TURN_CMD_CANID]->setData(std::move(initial_turn_cmd));
+  auto accel_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdFloat>();
+  auto brake_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdFloat>();
+  auto steer_cmd_msg = std::make_shared<pacmod4_msgs::SteeringCmd>();
+  auto shift_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdInt>();
+  auto turn_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdInt>();
+  // Initialize Turn Signal command with non-0 value
+  turn_cmd_msg->command = pacmod4_msgs::SystemCmdInt::TURN_NONE;
+  
+  init_rx_msg(ACCEL_CMD_CANID, accel_cmd_msg);
+  init_rx_msg(BRAKE_CMD_CANID, brake_cmd_msg);
+  init_rx_msg(STEERING_CMD_CANID, steer_cmd_msg);
+  init_rx_msg(SHIFT_CMD_CANID, shift_cmd_msg);
+  init_rx_msg(TURN_CMD_CANID, turn_cmd_msg);
 
   // Set initial state
   set_enable(false);
@@ -154,10 +155,8 @@ void Pacmod4Nl::initializeBrakeDecelApi()
   pub_tx_list.emplace(BRAKE_DECEL_AUX_RPT_CANID, nh_.advertise<pacmod4_msgs::BrakeDecelAuxRpt>("brake_decel_aux_rpt", 20));
   brake_decel_set_cmd = std::make_shared<ros::Subscriber>(nh_.subscribe(
     "brake_decel_cmd", 20, &Pacmod4Nl::callback_brake_decel_set_cmd, this));
-  rx_list.emplace(
-    BRAKE_DECEL_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(BRAKE_DECEL_CMD_CANID);
+  auto brake_decel_cmd_msg = std::make_shared<pacmod4_msgs::BrakeDecelCmd>();
+  init_rx_msg(BRAKE_DECEL_CMD_CANID, brake_decel_cmd_msg);
   NODELET_INFO("Initialized Brake Decel Api");
 }
 
@@ -173,10 +172,9 @@ void Pacmod4Nl::initializeCabinClimateRpt()
   pub_tx_list.emplace(CABIN_CLIMATE_RPT_CANID, nh_.advertise<pacmod4_msgs::CabinClimateRpt>("cabin_climate_rpt", 20));
   cabin_climate_set_cmd = std::make_shared<ros::Subscriber>(nh_.subscribe(
     "cabin_climate_set_cmd", 20, &Pacmod4Nl::callback_cabin_climate_set_cmd, this));
-  rx_list.emplace(
-    CABIN_CLIMATE_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(CABIN_CLIMATE_CMD_CANID);
+  auto cabin_climate_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdInt>();
+  init_rx_msg(CABIN_CLIMATE_CMD_CANID, cabin_climate_cmd_msg);
+
   NODELET_INFO("Initialized Cabin Climate Rpt API");
 }
 
@@ -260,10 +258,8 @@ void Pacmod4Nl::initializeEngineBrakeApi()
   pub_tx_list.emplace(ENGINE_BRAKE_AUX_RPT_CANID, nh_.advertise<pacmod4_msgs::EngineBrakeAuxRpt>("engine_brake_aux_rpt", 20));
   engine_brake_set_cmd_sub = std::make_shared<ros::Subscriber>(nh_.subscribe(
     "engine_brake_cmd", 20, &Pacmod4Nl::callback_engine_brake_set_cmd, this));
-  rx_list.emplace(
-    ENGINE_BRAKE_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(ENGINE_BRAKE_CMD_CANID);
+  auto engine_brake_cmd_msg = std::make_shared<pacmod4_msgs::EngineBrakeCmd>();
+  init_rx_msg(ENGINE_CMD_CANID, engine_brake_cmd_msg);
   NODELET_INFO("Initialized Engine Brake API");
 }
 
@@ -298,10 +294,8 @@ void Pacmod4Nl::initializeHazardLightApi()
 
   hazard_lights_set_cmd_sub = std::make_shared<ros::Subscriber>(
     nh_.subscribe("hazard_lights_cmd", 20, &Pacmod4Nl::callback_hazard_lights_set_cmd, this));
-  rx_list.emplace(
-    HAZARD_LIGHTS_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(HAZARD_LIGHTS_CMD_CANID);
+  auto hazard_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdBool>();
+  init_rx_msg(HAZARD_LIGHTS_CMD_CANID, hazard_cmd_msg);
   NODELET_INFO("Initialized HazardLight API");
 }
 
@@ -312,10 +306,8 @@ void Pacmod4Nl::initializeHeadlightApi()
 
   headlight_set_cmd_sub = std::make_shared<ros::Subscriber>(nh_.subscribe(
     "headlight_cmd", 20, &Pacmod4Nl::callback_headlight_set_cmd, this));
-  rx_list.emplace(
-      HEADLIGHT_CMD_CANID,
-      std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(HEADLIGHT_CMD_CANID);
+  auto headlight_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdInt>();
+  init_rx_msg(HEADLIGHT_CMD_CANID, headlight_cmd_msg);
   NODELET_INFO("Initialized Headlight API");
 }
 
@@ -325,10 +317,8 @@ void Pacmod4Nl::initializeHornApi()
 
   horn_set_cmd_sub = std::make_shared<ros::Subscriber>(nh_.subscribe(
     "horn_cmd", 20, &Pacmod4Nl::callback_horn_set_cmd, this));
-  rx_list.emplace(
-    HORN_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(HORN_CMD_CANID);
+  auto horn_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdBool>();
+  init_rx_msg(HORN_CMD_CANID, horn_cmd_msg);
   NODELET_INFO("Initialized Horn API");
 }
 
@@ -345,10 +335,8 @@ void Pacmod4Nl::initializeMediaControlsApi()
 
   media_controls_set_cmd_sub = std::make_shared<ros::Subscriber>(
     nh_.subscribe("media_controls_cmd", 20, &Pacmod4Nl::callback_media_controls_set_cmd, this));
-  rx_list.emplace(
-    MEDIA_CONTROLS_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(MEDIA_CONTROLS_CMD_CANID);
+  auto media_controls_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdInt>();
+  init_rx_msg(MEDIA_CONTROLS_CMD_CANID, media_controls_cmd_msg);
   NODELET_INFO("Initialized Media Controls API");
 }
 
@@ -430,10 +418,9 @@ void Pacmod4Nl::initializeWiperApi()
 
   wiper_set_cmd_sub = std::make_shared<ros::Subscriber>(nh_.subscribe(
     "wiper_cmd", 20, &Pacmod4Nl::callback_wiper_set_cmd, this));
-  rx_list.emplace(
-    WIPER_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(WIPER_CMD_CANID);
+  auto wiper_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdInt>();
+  init_rx_msg(WIPER_CMD_CANID, wiper_cmd_msg);
+
   NODELET_INFO("Initialized Wiper API");
 }
 
@@ -458,45 +445,33 @@ void Pacmod4Nl::initializeVehicle0SpecificApi()
 
   engine_brake_set_cmd_sub = std::make_shared<ros::Subscriber>(
     nh_.subscribe("engine_brake_cmd", 20, &Pacmod4Nl::callback_engine_brake_set_cmd, this));
-  rx_list.emplace(
-    ENGINE_BRAKE_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(ENGINE_BRAKE_CMD_CANID);
+  auto engine_brake_cmd_msg = std::make_shared<pacmod4_msgs::EngineBrakeCmd>();
+  init_rx_msg(ENGINE_BRAKE_CMD_CANID, engine_brake_cmd_msg);
 
   exhaust_brake_set_cmd_sub = std::make_shared<ros::Subscriber>(
     nh_.subscribe("exhaust_brake_cmd", 20, &Pacmod4Nl::callback_exhaust_brake_set_cmd, this));
-  rx_list.emplace(
-    EXHAUST_BRAKE_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(EXHAUST_BRAKE_CMD_CANID);
+  auto exhaust_brake_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdBool>();
+  init_rx_msg(EXHAUST_BRAKE_CMD_CANID, exhaust_brake_cmd_msg);
 
   global_cmd_sub = std::make_shared<ros::Subscriber>( 
     nh_.subscribe("global_cmd", 20, &Pacmod4Nl::callback_global_set_cmd, this));
-  rx_list.emplace(
-    GLOBAL_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(GLOBAL_CMD_CANID);
+  auto global_cmd_msg = std::make_shared<pacmod4_msgs::GlobalCmd>();
+  init_rx_msg(GLOBAL_CMD_CANID, global_cmd_msg);
 
   parking_brake_set_cmd_sub = std::make_shared<ros::Subscriber>(
     nh_.subscribe("parking_brake_cmd", 20, &Pacmod4Nl::callback_parking_brake_set_cmd, this));
-  rx_list.emplace(
-    PARKING_BRAKE_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(PARKING_BRAKE_CMD_CANID);
+  auto parking_brake_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdBool>();
+  init_rx_msg(PARKING_BRAKE_CMD_CANID, parking_brake_cmd_msg);
 
   safety_func_set_cmd_sub = std::make_shared<ros::Subscriber>(
     nh_.subscribe("safety_func_cmd", 20, &Pacmod4Nl::callback_safety_func_set_cmd, this));
-  rx_list.emplace(
-    SAFETY_FUNC_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(SAFETY_FUNC_CMD_CANID);
+  auto safety_func_cmd_msg = std::make_shared<pacmod4_msgs::SafetyFuncCmd>();
+  init_rx_msg(SAFETY_FUNC_CMD_CANID, safety_func_cmd_msg);
 
   sprayer_set_cmd_sub = std::make_shared<ros::Subscriber>( 
     nh_.subscribe("sprayer_cmd", 20, &Pacmod4Nl::callback_sprayer_set_cmd, this));
-  rx_list.emplace(
-    SPRAYER_CMD_CANID,
-    std::shared_ptr<LockedData>(new LockedData()));
-  received_cmds_.insert(SPRAYER_CMD_CANID);
+  auto sprayer_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdInt>();
+  init_rx_msg(SPRAYER_CMD_CANID, sprayer_cmd_msg);
 
   NODELET_INFO("Initialized Vehicle0-specific API");
 }
@@ -944,7 +919,6 @@ template<class RosMsgType>
 void Pacmod4Nl::lookup_and_encode(const uint32_t& can_id, const RosMsgType& msg)
 {
   auto rx_it = rx_list.find(can_id);
-
   if (rx_it != rx_list.end())
   {
     can_msgs::Frame packed_frame = handler->Encode(can_id, msg);
@@ -963,6 +937,14 @@ void Pacmod4Nl::lookup_and_encode(const uint32_t& can_id, const RosMsgType& msg)
   }
 }
 
+template<class RosMsgType>
+void Pacmod4Nl::init_rx_msg(const uint32_t& can_id, const RosMsgType& msg)
+{
+  rx_list.emplace(
+    can_id,
+    std::shared_ptr<LockedData>(new LockedData()));
+  lookup_and_encode(can_id, msg);
+}
 }  // namespace pacmod4
 
 PLUGINLIB_EXPORT_CLASS(pacmod4::Pacmod4Nl, nodelet::Nodelet);

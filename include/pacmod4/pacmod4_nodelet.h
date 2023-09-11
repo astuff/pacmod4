@@ -197,6 +197,8 @@ private:
   void set_enable(bool val);
   template<class RosMsgType>
   void lookup_and_encode(const uint32_t& can_id, const RosMsgType& msg);
+  template<class RosMsgType>
+  void init_rx_msg(const uint32_t& can_id, const RosMsgType& msg);
 
   std::unordered_map<uint32_t, ros::Publisher> pub_tx_list;
   std::unique_ptr<Pacmod4RosMsgHandler> handler;

@@ -3,10 +3,12 @@
   <arg name="use_kvaser" default="false" />
   <arg name="kvaser_hardware_id" default="27733" />
   <arg name="kvaser_circuit_id" default="0" />
-  <arg name="use_socketcan" default="false" />
+  <arg name="use_socketcan" default="true" />
   <arg name="socketcan_device" default="can0" />
   <arg name="dbc_major_version" default="13" />
   <arg name="namespace" default="pacmod" />
+  <arg name="use_ssc" default="true" />
+  <arg name="use_joystick" default="true" />
 
   <group ns="$(arg namespace)">
     <include file="$(find kvaser_interface)/launch/kvaser_can_bridge.launch" if="$(arg use_kvaser)">
@@ -25,4 +27,6 @@
       <param name="dbc_major_version" value="$(arg dbc_major_version)" />
     </node>
   </group>
+  <include file="$(find ssc_pm_scania_r730)/launch/speed_steering_control.launch" if="$(arg use_ssc)"/>
+  <include file="$(find ssc_joystick)/launch/ssc_joystick.launch" if="$(arg use_joystick)"/>
 </launch>
