@@ -396,6 +396,30 @@ void Pacmod4Nl::initializeSteeringRpt2Api()
   NODELET_INFO("Initialized Steering Rpt 2 API");
 }
 
+void Pacmod4Nl::initializeTipperBodyApi(uint32_t can_id)
+{
+  switch (can_id) {
+    case TIPPER_BODY_RPT_00_CANID:
+    {
+      pub_tx_list.emplace(TIPPER_BODY_RPT_00_CANID, nh_.advertise<pacmod4_msgs::SystemRptInt>("tipper_body_rpt_00", 20));
+
+      tipper_body_00_set_cmd_sub = std::make_shared<ros::Subscriber>(
+        nh_.subscribe("tipper_body_cmd_00", 20, &Pacmod4Nl::callback_tipper_body_00_set_cmd, this));
+      auto tipper_body_00_cmd_msg = std::make_shared<pacmod4_msgs::SystemCmdInt>();
+      init_rx_msg(TIPPER_BODY_RPT_00_CANID, tipper_body_00_cmd_msg);
+      NODELET_INFO("Initialized Tipper Body 00 API");
+    }
+    case TIPPER_BODY_RPT_01_CANID:
+    {
+      // pub_tx_list.emplace(TIPPER_BODY_RPT_01_CANID, nh_.advertise<pacmod4_msgs::SystemRptInt>("tipper_body_rpt_01", 20));
+    }
+    case TIPPER_BODY_RPT_02_CANID:
+    {
+
+    }
+  }
+}
+
 void Pacmod4Nl::initializeWheelSpeedApi(uint32_t can_id)
 {
   switch (can_id)
@@ -610,6 +634,12 @@ void Pacmod4Nl::initializeApiForMsg(uint32_t msg_can_id)
         initializeSteeringRpt2Api();
         break;
       }
+    case TIPPER_BODY_RPT_00_CANID:
+    case TIPPER_BODY_RPT_01_CANID:
+    case TIPPER_BODY_RPT_02_CANID:
+      {
+        initializeTipperBodyApi(msg_can_id);
+      }
     case WHEEL_SPEED_RPT_CANID:
     case WHEEL_SPEED_RPT_2_CANID:
       {
@@ -748,6 +778,21 @@ void Pacmod4Nl::callback_sprayer_set_cmd(const pacmod4_msgs::SystemCmdBool::Cons
 void Pacmod4Nl::callback_steer_cmd_sub(const pacmod4_msgs::SteeringCmd::ConstPtr& msg)
 {
   lookup_and_encode(STEERING_CMD_CANID, msg);
+}
+
+void Pacmod4Nl::callback_tipper_body_00_set_cmd(const pacmod4_msgs::SystemCmdInt::ConstPtr& msg)
+{
+  lookup_and_encode(TIPPER_BODY_CMD_00, msg);
+}
+
+void Pacmod4Nl::callback_tipper_body_01_set_cmd(const pacmod4_msgs::SystemCmdInt::ConstPtr& msg)
+{
+  lookup_and_encode(TIPPER_BODY_CMD_01, msg);
+}
+
+void Pacmod4Nl::callback_tipper_body_02_set_cmd(const pacmod4_msgs::SystemCmdInt::ConstPtr& msg)
+{
+  lookup_and_encode(TIPPER_BODY_CMD_02, msg);
 }
 
 void Pacmod4Nl::callback_turn_signal_set_cmd(const pacmod4_msgs::SystemCmdInt::ConstPtr& msg)

@@ -152,6 +152,7 @@ private:
   void initializeParkingBrakeRptApi();
   void initializeRearLightsRptApi();
   void initializeSteeringRpt2Api();
+  void initializeTipperBodyApi(uint32_t can_id);
   void initializeWheelSpeedApi(uint32_t can_id);
   void initializeWiperApi();
 
@@ -188,6 +189,9 @@ private:
   void callback_shift_set_cmd(const pacmod4_msgs::SystemCmdInt::ConstPtr& msg);
   void callback_sprayer_set_cmd(const pacmod4_msgs::SystemCmdBool::ConstPtr& msg);
   void callback_steer_cmd_sub(const pacmod4_msgs::SteeringCmd::ConstPtr& msg);
+  void callback_tipper_body_00_set_cmd(const pacmod4_msgs::SteeringCmd::ConstPtr& msg);
+  void callback_tipper_body_01_set_cmd(const pacmod4_msgs::SteeringCmd::ConstPtr& msg);
+  void callback_tipper_body_02_set_cmd(const pacmod4_msgs::SteeringCmd::ConstPtr& msg);
   void callback_turn_signal_set_cmd(const pacmod4_msgs::SystemCmdInt::ConstPtr& msg);
   void callback_wiper_set_cmd(const pacmod4_msgs::SystemCmdInt::ConstPtr& msg);
   void SystemStatusUpdate(const ros::TimerEvent& event);

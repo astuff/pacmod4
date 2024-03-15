@@ -84,6 +84,9 @@ Pacmod4RosMsgHandler::Pacmod4RosMsgHandler(uint32_t dbc_major_version)
   parse_functions[REAR_PASS_DOOR_RPT_CANID] =
   parse_functions[MEDIA_CONTROLS_RPT_CANID] =
   parse_functions[TURN_RPT_CANID] =
+  parse_functions[TIPPER_BODY_RPT_00_CANID] =
+  parse_functions[TIPPER_BODY_RPT_01_CANID] =
+  parse_functions[TIPPER_BODY_RPT_02_CANID] =
   parse_functions[WIPER_RPT_CANID] = std::bind(&pacmod4_common::DbcApi::ParseSystemRptInt, std::ref(*msg_api_), std::placeholders::_1);
   pub_functions[CRUISE_CONTROL_BUTTONS_RPT_CANID] =
   pub_functions[ENGINE_RPT_CANID] =
@@ -92,6 +95,9 @@ Pacmod4RosMsgHandler::Pacmod4RosMsgHandler(uint32_t dbc_major_version)
   pub_functions[REAR_PASS_DOOR_RPT_CANID] =
   pub_functions[MEDIA_CONTROLS_RPT_CANID] =
   pub_functions[TURN_RPT_CANID] =
+  pub_functions[TIPPER_BODY_RPT_00_CANID] =
+  pub_functions[TIPPER_BODY_RPT_01_CANID] =
+  pub_functions[TIPPER_BODY_RPT_02_CANID] =
   pub_functions[WIPER_RPT_CANID] = std::bind(&Pacmod4RosMsgHandler::ParseAndPublishType<pacmod4_msgs::SystemRptInt>, this, std::placeholders::_1, std::placeholders::_2);
 
   // Int With Control Status Reports
